@@ -26,20 +26,31 @@
     const text = OCR.findReadLine(buf, font, [[255,255,255]], 50,20); // example line
 
     const str = text?.text?.toLowerCase() || "";
+
+    // Debug logs:
+    console.log("OCR text:", str);
+
     const inLobby = /welcome back|play now/.test(str);
+
+    console.log("In Lobby?", inLobby, "Logged In?", loggedIn);
+
     if (!inLobby && !loggedIn) {
       loggedIn = true;
       startTime = Date.now();
       statusEl.textContent = "Logged in!";
+      console.log("Status changed: Logged in!");
     } else if (inLobby && loggedIn) {
       loggedIn = false;
       startTime = null;
       statusEl.textContent = "Lobby";
       timerEl.textContent = "Timer: 00:00:00";
+      console.log("Status changed: Lobby");
     }
+
     updateTimer();
   }
 
   setInterval(checkLogin, 1000);
+  setInterval(updateTimer, 1000);
 </script>
 </body></html>
