@@ -1,56 +1,59 @@
 <!DOCTYPE html>
-<html><body>
-<div id="status">Loading...</div>
-<div id="timer">Timer: 00:00:00</div>
-<script type="module">
-  import * as A1lib from "./node_modules/@alt1/base";
-  import * as OCR from "./node_modules/@alt1/ocr";
-  import font from "./node_modules/@alt1/fonts/aa_8px_mono.js"; // packaged font
+<html>
+<body>
+  <div id="status">Loading...</div>
+  <div id="timer">Timer: 00:00:00</div>
 
-  const statusEl = document.getElementById("status");
-  const timerEl = document.getElementById("timer");
-  let loggedIn = false, startTime = null;
+  <script src="https://www.unpkg.com/@alt1/base/dist/index.bundle.js"></script>
+  <script src="https://www.unpkg.com/@alt1/ocr/dist/index.bundle.js"></script>
+  <script src="https://www.unpkg.com/@alt1/fonts/aa_8px_mono.js"></script>
 
-  function updateTimer() {
-    if (!startTime) return;
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const h = String(Math.floor(elapsed/3600)).padStart(2,'0');
-    const m = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
-    const s = String(elapsed%60).padStart(2,'0');
-    timerEl.textContent = `Timer: ${h}:${m}:${s}`;
-  }
+  <script>
+    const statusEl = document.getElementById("status");
+    const timerEl = document.getElementById("timer");
+    let loggedIn = false, startTime = null;
 
-  async function checkLogin() {
-    const imgref = A1lib.capture(200, 300, 300, 100); // adjust to lobby text area
-    const buf = imgref.toData();
-    const text = OCR.findReadLine(buf, font, [[255,255,255]], 50,20); // example line
-
-    const str = text?.text?.toLowerCase() || "";
-
-    // Debug logs:
-    console.log("OCR text:", str);
-
-    const inLobby = /welcome back|play now/.test(str);
-
-    console.log("In Lobby?", inLobby, "Logged In?", loggedIn);
-
-    if (!inLobby && !loggedIn) {
-      loggedIn = true;
-      startTime = Date.now();
-      statusEl.textContent = "Logged in!";
-      console.log("Status changed: Logged in!");
-    } else if (inLobby && loggedIn) {
-      loggedIn = false;
-      startTime = null;
-      statusEl.textContent = "Lobby";
-      timerEl.textContent = "Timer: 00:00:00";
-      console.log("Status changed: Lobby");
+    function updateTimer() {
+      if (!startTime) return;
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      timerEl.textContent = `Timer: ${h}:${m}:${s}`;
     }
 
-    updateTimer();
-  }
+    function checkLogin() {
+      // Use Alt1Base and Alt1Ocr globals here:
+      const imgref = Alt1Base.capture(200, 300, 300, 100); // adjust area as needed
+      const buf = imgref.toData();
+      const text = Alt1Ocr.findReadLine(buf, FontAa8pxMono, [[255, 255, 255]], 50, 20);
 
-  setInterval(checkLogin, 1000);
-  setInterval(updateTimer, 1000);
-</script>
-</body></html>
+      const str = text?.text?.toLowerCase() || "";
+
+      console.log("OCR text:", str);
+
+      const inLobby = /welcome back|play now/.test(str);
+
+      console.log("In Lobby?", inLobby, "Logged In?", loggedIn);
+
+      if (!inLobby && !loggedIn) {
+        loggedIn = true;
+        startTime = Date.now();
+        statusEl.textContent = "Logged in!";
+        console.log("Status changed: Logged in!");
+      } else if (inLobby && loggedIn) {
+        loggedIn = false;
+        startTime = null;
+        statusEl.textContent = "Lobby";
+        timerEl.textContent = "Timer: 00:00:00";
+        console.log("Status changed: Lobby");
+      }
+
+      updateTimer();
+    }
+
+    setInterval(checkLogin, 1000);
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
