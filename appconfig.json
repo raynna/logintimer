@@ -5,5 +5,5 @@
   "type": "app",
   "category": "utility",
   "main": "index.html",
-  "permissions": []
+  "permissions": "read"
 }
