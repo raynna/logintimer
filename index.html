@@ -24,12 +24,12 @@
 
     function checkLogin() {
       // Use Alt1Base and Alt1Ocr globals here:
-      const imgref = Alt1Base.capture(200, 300, 300, 100); // adjust area as needed
+	  console.log(A1lib);
+      const imgref = A1lib.capture(200, 300, 300, 100); // adjust area as needed
       const buf = imgref.toData();
-      const text = Alt1Ocr.findReadLine(buf, FontAa8pxMono, [[255, 255, 255]], 50, 20);
+      const text = A1lib.findReadLine(buf, FontAa8pxMono, [[255, 255, 255]], 50, 20);
 
       const str = text?.text?.toLowerCase() || "";
-
       console.log("OCR text:", str);
 
       const inLobby = /welcome back|play now/.test(str);
