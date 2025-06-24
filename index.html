@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><body>
+<div id="status">Loading...</div>
+<div id="timer">Timer: 00:00:00</div>
+<script type="module">
+  import * as A1lib from "@alt1/base";
+  import * as OCR from "@alt1/ocr";
+  import font from "@alt1/fonts/aa_8px_mono.js"; // packaged font
+
+  const statusEl = document.getElementById("status");
+  const timerEl = document.getElementById("timer");
+  let loggedIn = false, startTime = null;
+
+  function updateTimer() {
+    if (!startTime) return;
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const h = String(Math.floor(elapsed/3600)).padStart(2,'0');
+    const m = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
+    const s = String(elapsed%60).padStart(2,'0');
+    timerEl.textContent = `Timer: ${h}:${m}:${s}`;
+  }
+
+  async function checkLogin() {
+    const imgref = A1lib.capture(200, 300, 300, 100); // adjust to lobby text area
+    const buf = imgref.toData();
+    const text = OCR.findReadLine(buf, font, [[255,255,255]], 50,20); // example line
+
+    const str = text?.text?.toLowerCase() || "";
+    const inLobby = /welcome back|play now/.test(str);
+    if (!inLobby && !loggedIn) {
+      loggedIn = true;
+      startTime = Date.now();
+      statusEl.textContent = "Logged in!";
+    } else if (inLobby && loggedIn) {
+      loggedIn = false;
+      startTime = null;
+      statusEl.textContent = "Lobby";
+      timerEl.textContent = "Timer: 00:00:00";
+    }
+    updateTimer();
+  }
+
+  setInterval(checkLogin, 1000);
+</script>
+</body></html>

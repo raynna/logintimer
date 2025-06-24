@@ -1,0 +1,9 @@
+{
+  "name": "Login Timer",
+  "description": "Tracks how long you've been logged in.",
+  "version": "1.0",
+  "type": "app",
+  "category": "utility",
+  "main": "index.html",
+  "permissions": []
+}
